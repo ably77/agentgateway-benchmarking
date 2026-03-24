@@ -1,0 +1,23 @@
+---
+# /mock-openai — MCP server back-call route → mock-llm
+# Same Gateway as /mcp — shared gateway, two HTTPRoutes
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: mock-openai
+  namespace: agentgateway-system
+spec:
+  parentRefs:
+    - name: agentgateway-proxy
+      namespace: agentgateway-system
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /mock-openai
+      backendRefs:
+        - name: mock-openai
+          group: agentgateway.dev
+          kind: AgentgatewayBackend
+      timeouts:
+        request: "120s"
