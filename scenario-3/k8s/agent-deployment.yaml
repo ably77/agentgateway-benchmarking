@@ -1,0 +1,66 @@
+---
+# Loadgen Client — single client connecting via the LoadBalancer external IP
+# GATEWAY_IP is intentionally blank — patched by setup-script.sh with the LB IP
+# so the external NLB hop is included in all latency measurements.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgen-client
+  namespace: agent-1
+  labels:
+    app: loadgen-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loadgen-client
+  template:
+    metadata:
+      labels:
+        app: loadgen-client
+    spec:
+      nodeSelector:
+        workload: agent
+      tolerations:
+        - key: workload
+          operator: Equal
+          value: agent
+          effect: NoSchedule
+      containers:
+        - name: loadgen-client
+          image: ably7/agentgateway-benchmark-client:0.1.4
+          imagePullPolicy: Always
+          ports:
+            - name: streamlit
+              containerPort: 8501
+          env:
+            - name: GATEWAY_IP
+              value: ""  # patched by setup-script.sh with the LoadBalancer external IP
+          readinessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loadgen-client
+  namespace: agent-1
+  labels:
+    app: loadgen-client
+spec:
+  selector:
+    app: loadgen-client
+  ports:
+    - name: streamlit
+      port: 8501
+      targetPort: 8501

@@ -1,0 +1,65 @@
+---
+# Loadgen Client 1 — Streamlit UI + Locust
+# Pinned to Node Group 1 (ns: agent-1, workload=agent)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: loadgen-client-1
+  namespace: agent-1
+  labels:
+    app: loadgen-client-1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: loadgen-client-1
+  template:
+    metadata:
+      labels:
+        app: loadgen-client-1
+    spec:
+      nodeSelector:
+        workload: agent
+      tolerations:
+        - key: workload
+          operator: Equal
+          value: agent
+          effect: NoSchedule
+      containers:
+        - name: loadgen-client
+          image: ably7/agentgateway-benchmark-client:0.1.4
+          imagePullPolicy: Always
+          ports:
+            - name: streamlit
+              containerPort: 8501
+          env:
+            - name: GATEWAY_IP
+              value: "agentgateway-proxy.agentgateway-system.svc.cluster.local"
+          readinessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loadgen-client-1
+  namespace: agent-1
+  labels:
+    app: loadgen-client-1
+spec:
+  selector:
+    app: loadgen-client-1
+  ports:
+    - name: streamlit
+      port: 8501
+      targetPort: 8501

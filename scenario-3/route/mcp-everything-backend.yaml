@@ -1,0 +1,18 @@
+---
+# MCP Everything AgentgatewayBackend — label-selector backend for session pinning
+apiVersion: agentgateway.dev/v1alpha1
+kind: AgentgatewayBackend
+metadata:
+  name: mcp-everything-backend
+  namespace: agentgateway-system
+spec:
+  mcp:
+    targets:
+      - name: mcp-server-everything
+        selector:
+          namespaces:
+            matchLabels:
+              kubernetes.io/metadata.name: ai-platform
+          services:
+            matchLabels:
+              app: mcp-server-everything

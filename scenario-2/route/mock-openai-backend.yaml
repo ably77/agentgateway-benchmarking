@@ -1,0 +1,19 @@
+---
+# Mock LLM backend — target for the MCP server back-call (benchmarked hop)
+# llm-d-inference-sim: OpenAI-compatible, deterministic, no rate limits
+apiVersion: agentgateway.dev/v1alpha1
+kind: AgentgatewayBackend
+metadata:
+  name: mock-openai
+  namespace: agentgateway-system
+spec:
+  ai:
+    provider:
+      openai:
+        model: "mock-gpt-4o-mini"
+      host: mock-llm.ai-platform.svc.cluster.local
+      port: 8080
+      path: "/v1/chat/completions"
+  policies:
+    auth:
+      passthrough: {}
