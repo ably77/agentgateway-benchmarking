@@ -16,7 +16,7 @@ Performance benchmarks for [AgentGateway](https://agentgateway.dev) across diffe
 
 1. Provision infrastructure — see [`gke/`](./gke/) for cluster setup
 2. Review [common requirements](./common-requirements.md)
-3. Start with **Scenario 1a** — each subsequent scenario builds on the previous one
+3. Start with **Scenario 0 — Baseline** — each subsequent scenario builds on the previous one
 
 ## Repository Structure
 
