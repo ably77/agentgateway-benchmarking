@@ -157,11 +157,12 @@ kubectl rollout restart -n ai-platform deployment mock-llm
 
 **Duration:** 4m 59s (2026-03-24 00:03:24 UTC → 2026-03-24 00:08:24 UTC)
 
-**Compared to Scenario 1a** — Negligible difference between shared-proxy and dedicated:
+**Compared to Scenario 1a** — Negligible difference between shared-proxy and dedicated
 
-> Shared gateway: p50=2ms  p95=2ms  p99=3ms
-
-> Dedicated Gateways: p50=2ms  p95=2ms  p99=3ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Shared gateway | 2ms | 2ms | 3ms |
+| Dedicated Gateways | 2ms | 2ms | 3ms |
 
 ---
 
@@ -178,11 +179,12 @@ kubectl rollout restart -n ai-platform deployment mock-llm
 
 **Duration:** 4m 59s (2026-03-24 00:13:44 UTC → 2026-03-24 00:18:44 UTC)
 
-**Compared to Scenario 1a** — Negligible difference between shared-proxy and dedicated:
+**Compared to Scenario 1a** — Negligible difference between shared-proxy and dedicated
 
-> Shared gateway: p50=4ms  p95=5ms  p99=6ms
-
-> Dedicated Gateways: p50=4ms  p95=5ms  p99=6ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Shared gateway | 4ms | 5ms | 6ms |
+| Dedicated Gateways | 4ms | 5ms | 6ms |
 
 ---
 
@@ -203,11 +205,12 @@ kubectl rollout restart -n ai-platform deployment mock-llm
 
 **Duration:** 4m 59s (2026-03-24 00:24:17 UTC → 2026-03-24 00:29:16 UTC)
 
-**Compared to Scenario 1a** — Negligible difference between shared-proxy and dedicated:
+**Compared to Scenario 1a** — Negligible difference between shared-proxy and dedicated
 
-> Shared gateway: p50=8ms  p95=10ms  p99=12ms
-
-> Dedicated Gateways: p50=8ms  p95=10ms  p99=12ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Shared gateway | 8ms | 10ms | 12ms |
+| Dedicated Gateways | 8ms | 10ms | 12ms |
 
 ---
 
@@ -227,11 +230,12 @@ kubectl rollout restart -n ai-platform deployment mock-llm
 
 **Duration:** 4m 59s (2026-03-24 00:41:41 UTC → 2026-03-24 00:46:41 UTC)
 
-**Compared to Scenario 1a** — Negligible difference between shared-proxy and dedicated:
+**Compared to Scenario 1a** — Negligible difference between shared-proxy and dedicated
 
-> Shared gateway: p50=6ms  p95=8ms  p99=9ms
-
-> Dedicated Gateways: p50=6ms  p95=8ms  p99=9ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Shared gateway | 6ms | 8ms | 9ms |
+| Dedicated Gateways | 6ms | 8ms | 9ms |
 
 ---
 

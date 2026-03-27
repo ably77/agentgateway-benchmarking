@@ -145,12 +145,12 @@ chmod +x setup-script.sh
 
 **Duration:** 4m 59s (2026-03-24 16:07:51 UTC → 2026-03-24 16:12:51 UTC)
 
-**Results compared to Scenario 1a:**
-- Minimal latency add (1-2ms) when traversing over the cloud provider's backplane is expected
+**Results compared to Scenario 1a** — Minimal latency add (1-2ms) when traversing over the cloud provider's backplane is expected
 
->Client in-network of gateway: p50=2ms  p95=2ms  p99=3ms
-
->Client external to gateway (different cluster / same zone gke): p50=2ms  p95=3ms  p99=3ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Client in-network of gateway | 2ms | 2ms | 3ms |
+| Client external to gateway (different cluster / same zone gke) | 2ms | 3ms | 3ms |
 
 #### Agentgateway to MCP Baseline (5-min)
 
@@ -165,12 +165,12 @@ chmod +x setup-script.sh
 
 **Duration:** 4m 59s (2026-03-24 16:17:56 UTC → 2026-03-24 16:22:55 UTC)
 
-**Results compared to Scenario 1a:**
-- Minimal latency add (1-2ms) when traversing over the cloud provider's backplane is expected
+**Results compared to Scenario 1a** — Minimal latency add (1-2ms) when traversing over the cloud provider's backplane is expected
 
->Client in-network of gateway: p50=4ms  p95=5ms  p99=6ms
-
->Client external to gateway (different cluster / same zone gke): p50=5ms  p95=6ms  p99=7ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Client in-network of gateway | 4ms | 5ms | 6ms |
+| Client external to gateway (different cluster / same zone gke) | 5ms | 6ms | 7ms |
 
 #### Full Chain - Standard Tool Use Flow (5 mins)
 
@@ -189,13 +189,12 @@ chmod +x setup-script.sh
 
 **Duration:** 4m 59s (2026-03-24 16:30:37 UTC → 2026-03-24 16:35:37 UTC)
 
-**Results compared to Scenario 1a:**
-- Minimal latency add (1-2ms) when traversing over the cloud provider's backplane is expected
-- Round trip effects can compound if running multiple LLM/MCP tool calls
+**Results compared to Scenario 1a** — Minimal latency add (1-2ms) when traversing over the cloud provider's backplane is expected; round trip effects can compound if running multiple LLM/MCP tool calls
 
->Client in-network of gateway: p50=8ms  p95=10ms  p99=12ms
-
->Client external to gateway (different cluster / same zone gke): p50=10ms  p95=12ms  p99=14ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Client in-network of gateway | 8ms | 10ms | 12ms |
+| Client external to gateway (different cluster / same zone gke) | 10ms | 12ms | 14ms |
 
 #### Full Chain - Context-Augmented Flow (5 mins)
 
@@ -213,13 +212,12 @@ chmod +x setup-script.sh
 
 **Duration:** 4m 59s (2026-03-24 16:40:54 UTC → 2026-03-24 16:45:53 UTC)
 
-**Results compared to Scenario 1a:**
-- Minimal latency add (1-2ms) when traversing over the cloud provider's backplane is expected
-- Round trip effects can compound if running multiple LLM/MCP tool calls
+**Results compared to Scenario 1a** — Minimal latency add (1-2ms) when traversing over the cloud provider's backplane is expected; round trip effects can compound if running multiple LLM/MCP tool calls
 
->Client in-network of gateway: p50=6ms  p95=8ms  p99=9ms
-
->Client external to gateway (different cluster / same zone gke): p50=8ms  p95=9ms  p99=10ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Client in-network of gateway | 6ms | 8ms | 9ms |
+| Client external to gateway (different cluster / same zone gke) | 8ms | 9ms | 10ms |
 
 ### External (venv) Results
 
@@ -235,12 +233,12 @@ chmod +x setup-script.sh
 
 **Duration:** 4m 59s (2026-03-24 02:01:04 UTC → 2026-03-24 02:06:03 UTC)
 
-**Results compared to Scenario 1a:**
-- Public --> External load balancer hop cost included in the call chain can be significant
+**Results compared to Scenario 1a** — Public → External load balancer hop cost included in the call chain can be significant
 
->Client in-network of gateway: p50=2ms  p95=2ms  p99=3ms
-
->Client external to gateway: p50=97ms  p95=170ms  p99=190ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Client in-network of gateway | 2ms | 2ms | 3ms |
+| Client external to gateway | 97ms | 170ms | 190ms |
 
 #### Agentgateway to MCP Baseline (5-min)
 
@@ -255,12 +253,12 @@ chmod +x setup-script.sh
 
 **Duration:** 4m 58s (2026-03-24 02:08:13 UTC → 2026-03-24 02:13:12 UTC)
 
-**Results compared to Scenario 1a:**
-- Public --> External load balancer hop cost included in the call chain can be significant
+**Results compared to Scenario 1a** — Public → External load balancer hop cost included in the call chain can be significant
 
->Client in-network of gateway: p50=4ms  p95=5ms  p99=6ms
-
->Client external to gateway: p50=270ms  p95=640ms  p99=720ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Client in-network of gateway | 4ms | 5ms | 6ms |
+| Client external to gateway | 270ms | 640ms | 720ms |
 
 #### Full Chain - Standard Tool Use Flow (5 mins)
 
@@ -279,12 +277,12 @@ chmod +x setup-script.sh
 
 **Duration:** 4m 58s (2026-03-24 01:41:42 UTC → 2026-03-24 01:46:40 UTC)
 
-**Results compared to Scenario 1a:**
-- Public --> External load balancer hop cost included in the call chain can be significant
+**Results compared to Scenario 1a** — Public → External load balancer hop cost included in the call chain can be significant
 
->Client in-network of gateway: p50=8ms  p95=10ms  p99=12ms
-
->Client external to gateway: p50=450ms  p95=700ms  p99=1000ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Client in-network of gateway | 8ms | 10ms | 12ms |
+| Client external to gateway | 450ms | 700ms | 1000ms |
 
 #### Full Chain - Context-Augmented Flow (5 mins)
 
@@ -302,12 +300,12 @@ chmod +x setup-script.sh
 
 **Duration:** 4m 58s (2026-03-24 01:49:48 UTC → 2026-03-24 01:54:47 UTC)
 
-**Results compared to Scenario 1a:**
-- Public --> External load balancer hop cost included in the call chain can be significant
+**Results compared to Scenario 1a** — Public → External load balancer hop cost included in the call chain can be significant
 
->Client in-network of gateway: p50=6ms  p95=8ms  p99=9ms
-
->Client external to gateway: p50=370ms  p95=700ms  p99=1300ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Client in-network of gateway | 6ms | 8ms | 9ms |
+| Client external to gateway | 370ms | 700ms | 1300ms |
 
 ---
 

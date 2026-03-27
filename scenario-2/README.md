@@ -161,11 +161,11 @@ kubectl rollout restart -n ai-platform deployment mock-llm
 - Negligible difference between single and multi-client for full chain standard tool use flow
 - Slight increase in CPU usage
 
-> Scenario 1a (1 client):  p50=4ms  p95=5ms  p99=6ms
->
-> Scenario 2  (client 1): p50=4ms  p95=4ms  p99=6ms
->
-> Scenario 2  (client 2): p50=4ms  p95=4ms  p99=6ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Scenario 1a (1 client) | 4ms | 5ms | 6ms |
+| Scenario 2 (client 1) | 4ms | 4ms | 6ms |
+| Scenario 2 (client 2) | 4ms | 4ms | 6ms |
 
 ---
 
@@ -206,11 +206,11 @@ kubectl rollout restart -n ai-platform deployment mock-llm
 - Negligible difference between single and multi-client for full chain standard tool use flow
 - Slight increase in CPU usage
 
-> Scenario 1a (1 client):  p50=8ms  p95=10ms  p99=12ms
->
-> Scenario 2  (client 1): p50=8ms  p95=10ms  p99=12ms
->
-> Scenario 2  (client 2): p50=8ms  p95=10ms  p99=12ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Scenario 1a (1 client) | 8ms | 10ms | 12ms |
+| Scenario 2 (client 1) | 8ms | 10ms | 12ms |
+| Scenario 2 (client 2) | 8ms | 10ms | 12ms |
 
 ---
 
@@ -246,11 +246,11 @@ kubectl rollout restart -n ai-platform deployment mock-llm
 
 #### Comparison to Scenario 1a Baseline
 
-> Scenario 1a (1 client):  p50=6ms  p95=8ms  p99=9ms
->
-> Scenario 2  (client 1): p50=6ms  p95=8ms  p99=9ms
->
-> Scenario 2  (client 2): p50=6ms  p95=7ms  p99=9ms
+| | p50 | p95 | p99 |
+|---|---|---|---|
+| Scenario 1a (1 client) | 6ms | 8ms | 9ms |
+| Scenario 2 (client 1) | 6ms | 8ms | 9ms |
+| Scenario 2 (client 2) | 6ms | 7ms | 9ms |
 
 ---
 
