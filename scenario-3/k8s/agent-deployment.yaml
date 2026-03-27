@@ -1,7 +1,6 @@
 ---
-# Loadgen Client — single client connecting via the LoadBalancer external IP
-# GATEWAY_IP is intentionally blank — patched by setup-script.sh with the LB IP
-# so the external NLB hop is included in all latency measurements.
+# Loadgen Client — Streamlit UI + Locust
+# Pinned to Node Group 1 (ns: agent-1, workload=agent)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -35,7 +34,7 @@ spec:
               containerPort: 8501
           env:
             - name: GATEWAY_IP
-              value: ""  # patched by setup-script.sh with the LoadBalancer external IP
+              value: "agentgateway-proxy.agentgateway-system.svc.cluster.local"
           readinessProbe:
             httpGet:
               path: /_stcore/health
@@ -44,11 +43,11 @@ spec:
             periodSeconds: 5
           resources:
             requests:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: "3500m"
+              memory: "12Gi"
             limits:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: "3500m"
+              memory: "12Gi"
 ---
 apiVersion: v1
 kind: Service

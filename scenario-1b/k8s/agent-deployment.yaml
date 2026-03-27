@@ -1,11 +1,6 @@
 ---
 # Loadgen Client — Streamlit UI + Locust
 # Pinned to Node Group 1 (ns: agent-1, workload=agent)
-# In scenario 1b, two dedicated proxies exist:
-#   MCP traffic  → agentgateway-proxy-mcp.agentgateway-system.svc.cluster.local
-#   LLM traffic  → agentgateway-proxy-llm.agentgateway-system.svc.cluster.local
-# GATEWAY_IP is set to the MCP proxy (primary inbound from client).
-# For direct LLM baseline tests, configure the host via the Streamlit UI.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -39,7 +34,7 @@ spec:
               containerPort: 8501
           env:
             - name: GATEWAY_IP
-              value: "agentgateway-proxy-mcp.agentgateway-system.svc.cluster.local"
+              value: "agentgateway-proxy.agentgateway-system.svc.cluster.local"
           readinessProbe:
             httpGet:
               path: /_stcore/health
@@ -48,11 +43,11 @@ spec:
             periodSeconds: 5
           resources:
             requests:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: "3500m"
+              memory: "12Gi"
             limits:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: "3500m"
+              memory: "12Gi"
 ---
 apiVersion: v1
 kind: Service

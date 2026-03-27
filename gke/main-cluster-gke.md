@@ -136,7 +136,7 @@ POOL_ZONE="${GKE_CLUSTER_ZONE}"
 POOL_MACHINE_TYPE="n2-standard-4"
 POOL_NUM_NODES="4"
 POOL_MIN_NODES="4"
-POOL_MAX_NODES="5"
+POOL_MAX_NODES="7"
 POOL_NODE_TAINTS="workload=capability:NoSchedule"
 POOL_NODE_LABELS="workload=capability"
 

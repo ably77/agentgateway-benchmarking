@@ -353,3 +353,155 @@ scenario-1a/
     ├── 50vu/
     └── 100vu/
 ```
+
+---
+
+### 250 VU Results
+
+- **Spawn rate**: 5 users/s
+- **Duration**: 300 seconds (5 mins)
+- **LLM Payload size**: 256 B
+- **MCP Payload Size**: 32 KB
+
+#### AGW > LLM Baseline (1x LLM call)
+
+![agentgateway-to-llm](images/250vu/agentgateway-to-llm.png)
+![agentgateway-to-llm-grafana-1](images/250vu/agentgateway-to-llm-grafana-1.png)
+![agentgateway-to-llm-grafana-2](images/250vu/agentgateway-to-llm-grafana-2.png)
+
+| Endpoint | Reqs | Fails | p50 | p95 | p99 |
+|----------|------|-------|-----|-----|-----|
+| /mock-openai | 55078 | 0 | 2ms | 2ms | 3ms |
+
+**Duration:** 4m 59s (2026-03-27 19:51:25 UTC → 2026-03-27 19:56:25 UTC)
+
+**Results compared to 50VU** — Negligible latency difference between 50VU and 250vu. Increased resource usage relative to scale of VUs (predictable).
+
+| | p50 | p95 | p99 | CPU peak |
+|---|---|---|---|---|
+| 50VU | 2ms | 2ms | 3ms | 0.02 vCPU |
+| 250vu | 2ms | 2ms | 3ms | 0.06 vCPU |
+
+#### AGW > MCP Baseline (1x MCP tool call)
+
+![agentgateway-to-mcp](images/250vu/agentgateway-to-mcp.png)
+![agentgateway-to-mcp-grafana-1](images/250vu/agentgateway-to-mcp-grafana-1.png)
+![agentgateway-to-mcp-grafana-2](images/250vu/agentgateway-to-mcp-grafana-2.png)
+
+| Endpoint | Reqs | Fails | p50 | p95 | p99 |
+|----------|------|-------|-----|-----|-----|
+| /mcp initialize | 250 | 0 | 14ms | 24ms | 51ms |
+| /mcp → echo tool | 54904 | 0 | 4ms | 5ms | 7ms |
+
+**Duration:** 4m 59s (2026-03-27 20:44:48 UTC → 2026-03-27 20:49:47 UTC)
+
+**Results compared to 50VU** — Negligible latency difference between 50VU and 250vu. Increased resource usage relative to scale of VUs (predictable).
+
+| | p50 | p95 | p99 | CPU peak |
+|---|---|---|---|---|
+| 50VU | 4ms | 5ms | 6ms | 0.035 vCPU |
+| 250vu | 4ms | 5ms | 7ms | 0.125 vCPU |
+
+#### Full Chain - Standard Tool Use Flow
+
+![full-chain-standard-tool-use-flow](images/250vu/full-chain-standard-tool-use-flow.png)
+![full-chain-standard-tool-use-flow-grafana-1](images/250vu/full-chain-standard-tool-use-flow-grafana-1.png)
+![full-chain-standard-tool-use-flow-grafana-2](images/250vu/full-chain-standard-tool-use-flow-grafana-2.png)
+![full-chain-standard-tool-use-flow-grafana-3](images/250vu/full-chain-standard-tool-use-flow-grafana-3.png)
+![full-chain-standard-tool-use-flow-grafana-4](images/250vu/full-chain-standard-tool-use-flow-grafana-4.png)
+
+| Endpoint | Reqs | Fails | p50 | p95 | p99 |
+|----------|------|-------|-----|-----|-----|
+| /mcp initialize | 250 | 0 | 15ms | 24ms | 49ms |
+| /mock-openai → initial prompt | 54,710 | 0 | 3ms | 6ms | 9ms |
+| /mcp → echo tool | 54706 | 0 | 4ms | 7ms | 10ms |
+| /mock-openai → tool result summary | 54704 | 0 | 3s | 6ms | 8ms |
+| [full chain] standard tool-use | 54704 | 0 | 10ms | 17ms | 26ms |
+
+**Duration:** 4m 59s (2026-03-27 21:30:30 UTC → 2026-03-27 21:35:30 UTC)
+
+**Results compared to 50VU** — Negligible latency difference between 50VU and 250vu. Increased resource usage relative to scale of VUs (predictable).
+
+| | p50 | p95 | p99 | CPU peak |
+|---|---|---|---|---|
+| 50VU | 8ms | 10ms | 12ms | 0.035 vCPU |
+| 250VU | 10ms | 17ms | 26ms | 0.245 vCPU |
+
+#### Full Chain - Context-Augmented Flow
+
+![full-chain-context-augmented-flow](images/250vu/full-chain-context-augmented-flow.png)
+![full-chain-context-augmented-flow-grafana-1](images/250vu/full-chain-context-augmented-flow-grafana-1.png)
+![full-chain-context-augmented-flow-grafana-2](images/250vu/full-chain-context-augmented-flow-grafana-2.png)
+![full-chain-context-augmented-flow-grafana-3](images/250vu/full-chain-context-augmented-flow-grafana-3.png)
+
+| Endpoint | Reqs | Fails | p50 | p95 | p99 |
+|----------|------|-------|-----|-----|-----|
+| /mcp initialize | 250 | 0 | 14ms | 21ms | 25ms |
+| /mcp → echo tool | 54818 | 0 | 4ms | 6ms | 9ms |
+| /mock-openai | 54817 | 0 | 2ms | 4ms | 6ms |
+| [full chain] context-augmented flow | 54817 | 0 | 7ms | 10ms | 13ms |
+
+**Duration:** 4m 59s (2026-03-27 22:04:53 UTC → 2026-03-27 22:09:53 UTC)
+
+**Results compared to 50VU** — Negligible latency difference between 50VU and 250vu. Increased resource usage relative to scale of VUs (predictable).
+
+| | p50 | p95 | p99 | CPU peak |
+|---|---|---|---|---|
+| 50VU | 6ms | 8ms | 9ms | 0.035 vCPU |
+| 250vu | 7ms | 10ms | 13ms | 0.19 vCPU |
+
+---
+
+## Observability
+
+```bash
+# AgentGateway request logs (hop timing)
+kubectl logs -n agentgateway-system deploy/agentgateway -f
+
+# MCP server logs
+kubectl logs -n ai-platform deploy/mcp-server-everything -f
+
+# Prometheus metrics
+kubectl port-forward -n monitoring svc/prometheus 9090:9090
+open http://localhost:9090
+
+# Grafana (if deployed)
+kubectl port-forward -n monitoring svc/grafana 3000:3000
+open http://localhost:3000
+```
+
+Key Prometheus queries:
+```promql
+# P99 latency per route
+histogram_quantile(0.99, sum(rate(agentgateway_request_duration_seconds_bucket[5m])) by (le, route))
+
+# Requests per second
+sum(rate(agentgateway_requests_total[1m])) by (route)
+
+# Error rate
+sum(rate(agentgateway_requests_total{status=~"5.."}[1m])) by (route)
+```
+
+---
+
+## File Structure
+
+```
+scenario-1a/
+├── README.md               # This file
+├── setup-script.sh          # One-shot setup & teardown
+├── agent/
+│   ├── app.py              # Streamlit UI (single-agent + load test launcher)
+│   ├── loadtest.py         # Locust load test definition
+│   └── requirements.txt    # Python dependencies
+├── k8s/
+│   └── mcp-everything-deployment.yaml  # MCP everything server + service
+├── route/
+│   ├── mock-openai-httproute.yaml       # /mock-openai route (mock LLM proxy)
+│   ├── mock-openai-backend.yaml        # mock-llm AgentgatewayBackend
+│   ├── mcp-everything-httproute.yaml   # /mcp route (MCP proxy)
+│   └── mcp-everything-backend.yaml     # MCP everything AgentgatewayBackend
+└── images/                             # Locust & Grafana screenshots for test results
+    ├── 50vu/
+    └── 250vu/
+```

@@ -43,11 +43,11 @@ spec:
             periodSeconds: 5
           resources:
             requests:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: "3500m"
+              memory: "12Gi"
             limits:
-              cpu: "500m"
-              memory: "512Mi"
+              cpu: "3500m"
+              memory: "12Gi"
 ---
 apiVersion: v1
 kind: Service
