@@ -314,6 +314,12 @@ with tab_single:
                     _resp.raise_for_status()
                     _sid = _resp.headers.get("mcp-session-id", "")
                     if _sid:
+                        requests.post(
+                            _mcp_url,
+                            json={"jsonrpc": "2.0", "method": "notifications/initialized"},
+                            headers={**_headers, "mcp-session-id": _sid},
+                            timeout=10,
+                        )
                         st.session_state.mcp_session_id = _sid
                         st.session_state.mcp_init_ms = (time.perf_counter() - _t) * 1000
                         st.rerun()

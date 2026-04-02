@@ -27,14 +27,14 @@ spec:
           effect: NoSchedule
       containers:
         - name: loadgen-client
-          image: ably7/agentgateway-benchmark-client:0.1.4
+          image: ably7/agentgateway-benchmark-client:0.1.5
           imagePullPolicy: Always
           ports:
             - name: streamlit
               containerPort: 8501
           env:
             - name: GATEWAY_IP
-              value: "mcp-server-everything.ai-platform.svc.cluster.local"
+              value: "fast-mcp.ai-platform.svc.cluster.local"
           readinessProbe:
             httpGet:
               path: /_stcore/health

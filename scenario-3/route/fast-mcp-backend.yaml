@@ -1,18 +1,18 @@
 ---
-# MCP Everything AgentgatewayBackend — label-selector backend for session pinning
+# fast-mcp AgentgatewayBackend — label-selector backend for session pinning
 apiVersion: agentgateway.dev/v1alpha1
 kind: AgentgatewayBackend
 metadata:
-  name: mcp-everything-backend
+  name: fast-mcp-backend
   namespace: agentgateway-system
 spec:
   mcp:
     targets:
-      - name: mcp-server-everything
+      - name: fast-mcp
         selector:
           namespaces:
             matchLabels:
               kubernetes.io/metadata.name: ai-platform
           services:
             matchLabels:
-              app: mcp-server-everything
+              app: fast-mcp

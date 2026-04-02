@@ -23,7 +23,7 @@
 | `loadgen-client-4` | `agent-4` | 1 | Optional 4th client |
 | `loadgen-client-5` | `agent-5` | 1 | Optional 5th client |
 | `agentgateway` | `agentgateway-system` | 2 | Shared gateway for all clients |
-| `mcp-server-everything` | `ai-platform` | 3 | Reference MCP server |
+| `fast-mcp` | `ai-platform` | 3 | Lightweight MCP server |
 | `mock-llm-d` | `ai-platform` | 1 | Mock OpenAI-compatible LLM inference service (llm-d-inference-sim) |
 | `prometheus` | `monitoring` | 1 | Metrics |
 | `grafana` | `monitoring` | 1 | Dashboards |
@@ -71,7 +71,7 @@ The script walks through steps interactively:
 Scale MCP and LLM deployments for load testing:
 
 ```bash
-kubectl scale -n ai-platform deploy/mcp-server-everything --replicas 3
+kubectl scale -n ai-platform deploy/fast-mcp --replicas 3
 kubectl scale -n ai-platform deploy/mock-llm --replicas 3
 ```
 
@@ -119,7 +119,7 @@ Run each test case across **all clients simultaneously**:
 Rollout restart the backend servers before the next test run:
 
 ```bash
-kubectl rollout restart -n ai-platform deployment mcp-server-everything
+kubectl rollout restart -n ai-platform deployment fast-mcp
 kubectl rollout restart -n ai-platform deployment mock-llm
 ```
 
@@ -261,7 +261,7 @@ kubectl rollout restart -n ai-platform deployment mock-llm
 kubectl logs -n agentgateway-system deploy/agentgateway -f
 
 # MCP server logs
-kubectl logs -n ai-platform deploy/mcp-server-everything -f
+kubectl logs -n ai-platform deploy/fast-mcp -f
 
 # Prometheus port-forward
 kubectl port-forward -n monitoring svc/grafana-prometheus-kube-pr-prometheus 9090:9090
@@ -299,11 +299,11 @@ scenario-2/
 │   ├── agent-3-deployment.yaml
 │   ├── agent-4-deployment.yaml
 │   ├── agent-5-deployment.yaml
-│   ├── mcp-everything-deployment.yaml
+│   ├── fast-mcp-deployment.yaml
 │   └── mock-llm-deployment.yaml
 ├── route/
-│   ├── mcp-everything-httproute.yaml
-│   ├── mcp-everything-backend.yaml
+│   ├── fast-mcp-httproute.yaml
+│   ├── fast-mcp-backend.yaml
 │   ├── mock-openai-httproute.yaml
 │   └── mock-openai-backend.yaml
 ├── images/                             # Locust & Grafana screenshots
