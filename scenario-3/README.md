@@ -37,7 +37,7 @@ Measures: gateway overhead + NLB (no internet variance). The setup script lists 
 |-----------|----------|-------|
 | `agent` | 1 | Locust load test client |
 | `agentgateway` | 2 | Handles `/mcp` and `/mock-openai` — unchanged from 1a |
-| `mcp-server-everything` | 3 | Reference MCP server |
+| `fast-mcp` | 3 | Lightweight MCP server with echo tool |
 | `mock-llm-d` | 1 | Mock OpenAI-compatible LLM inference service (llm-d-inference-sim) |
 | `prometheus` | 1 | Metrics |
 | `grafana` | 1 | Dashboards |
@@ -74,7 +74,7 @@ chmod +x setup-script.sh
 1. Scale the MCP deployment:
 
    ```bash
-   kubectl scale -n ai-platform deploy/mcp-server-everything --replicas 3
+   kubectl scale -n ai-platform deploy/fast-mcp --replicas 3
    ```
 
    The client connects via the LoadBalancer external IP — the NLB hop is included in all measurements.
@@ -109,7 +109,7 @@ chmod +x setup-script.sh
 7. After each test, rollout restart the backend servers:
 
    ```bash
-   kubectl rollout restart -n ai-platform deployment mcp-server-everything
+   kubectl rollout restart -n ai-platform deployment fast-mcp
    kubectl rollout restart -n ai-platform deployment mock-llm
    ```
 
@@ -326,7 +326,7 @@ scenario-3/
 ├── cleanup.sh
 ├── k8s/
 │   ├── agent-deployment.yaml           # Single client (agent-1), GATEWAY_IP patched at deploy time
-│   ├── mcp-everything-deployment.yaml  # Unchanged from 1a
+│   ├── fast-mcp-deployment.yaml        # Lightweight MCP server (fast-mcp)
 │   └── mock-llm-deployment.yaml        # Unchanged from 1a
 ├── images/                             # Locust & Grafana screenshots for test results
 │   ├── same-zone-gke/
@@ -339,6 +339,6 @@ scenario-3/
 └── route/
     ├── mock-openai-httproute.yaml    # Unchanged from 1a
     ├── mock-openai-backend.yaml      # Unchanged from 1a
-    ├── mcp-everything-httproute.yaml # Unchanged from 1a
-    └── mcp-everything-backend.yaml   # Unchanged from 1a
+    ├── fast-mcp-httproute.yaml       # Unchanged from 1a
+    └── fast-mcp-backend.yaml         # Unchanged from 1a
 ```

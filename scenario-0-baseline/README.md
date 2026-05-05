@@ -21,10 +21,10 @@
 | Component | Replicas | Notes |
 |-----------|----------|-------|
 | `agent` | 1 | Locust load test client |
-| `mcp-server-everything` | 1 | Reference MCP server — scaled to 1 replica for direct tests (session stickiness) |
+| `fast-mcp` | 1 | Lightweight MCP server — scaled to 1 replica for direct tests (session stickiness) |
 | `mock-llm-d` | 1 | Mock OpenAI-compatible LLM inference service (llm-d-inference-sim) |
 
-> **Note:** `mcp-server-everything` must be scaled to 1 replica for baseline tests. Without Agentgateway handling session pinning, Kubernetes load-balances round-robin across pods — an `initialize` call may hit pod A while subsequent `tools/call` requests hit pod B, which has no session record and returns 400.
+> **Note:** `fast-mcp` must be scaled to 1 replica for baseline tests. Without Agentgateway handling session pinning, Kubernetes load-balances round-robin across pods — an `initialize` call may hit pod A while subsequent `tools/call` requests hit pod B, which has no session record and returns 400.
 
 ---
 
@@ -48,7 +48,7 @@ chmod +x setup-script.sh
 ```
 
 The script walks through the following steps interactively:
-1. Deploy mcp-server-everything (1 replica) + mock-llm-d to `ai-platform` namespace
+1. Deploy fast-mcp (1 replica) + mock-llm-d to `ai-platform` namespace
 2. Set up port-forwards (`localhost:8080` → MCP, `localhost:8081` → LLM)
 3. Set up Python virtual environment
 4. Launch Streamlit UI
@@ -60,7 +60,7 @@ The script walks through the following steps interactively:
 ### 1. Scale MCP to a single replica
 
 ```bash
-kubectl scale -n ai-platform deploy/mcp-server-everything --replicas 1
+kubectl scale -n ai-platform deploy/fast-mcp --replicas 1
 ```
 
 > **Why?** The MCP server does not share session state across replicas. With multiple pods the Kubernetes Service load-balances round-robin, so an `initialize` call may land on pod A while subsequent `tools/call` requests hit pod B (which has no session and returns 400). Agentgateway handles session pinning automatically, but when bypassing it you must run a single replica.
@@ -72,7 +72,7 @@ kubectl scale -n ai-platform deploy/mcp-server-everything --replicas 1
 
 | Service | Host | Port | Path |
 |---------|------|------|------|
-| MCP | `mcp-server-everything.ai-platform.svc.cluster.local` | `8080` | `/mcp` |
+| MCP | `fast-mcp.ai-platform.svc.cluster.local` | `8080` | `/mcp` |
 | LLM | `mock-llm.ai-platform.svc.cluster.local` | `8080` | *(leave blank)* |
 
 ### 3. Run tests
@@ -97,7 +97,7 @@ Execute each test in order:
 Rollout restart the backend servers to reset state:
 
 ```bash
-kubectl rollout restart -n ai-platform deployment mcp-server-everything
+kubectl rollout restart -n ai-platform deployment fast-mcp
 kubectl rollout restart -n ai-platform deployment mock-llm
 ```
 
@@ -161,7 +161,7 @@ kubectl rollout restart -n ai-platform deployment mock-llm
 
 ```bash
 # MCP server logs
-kubectl logs -n ai-platform deploy/mcp-server-everything -f
+kubectl logs -n ai-platform deploy/fast-mcp -f
 ```
 
 ---
@@ -173,7 +173,7 @@ scenario-0-baseline/
 ├── README.md
 ├── setup-script.sh          # One-shot setup
 ├── k8s/
-│   ├── mcp-everything-deployment.yaml
+│   ├── fast-mcp-deployment.yaml
 │   ├── mock-llm-deployment.yaml
 │   └── agent-deployment.yaml
 └── images/

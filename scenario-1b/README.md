@@ -38,7 +38,7 @@
 | `agent` | 1 | Locust load test client |
 | `agentgateway-proxy-mcp` | 1 | Handles `/mcp` routes only |
 | `agentgateway-proxy-llm` | 1 | Handles `/mock-openai` routes only |
-| `mcp-server-everything` | 3 | Reference MCP server |
+| `fast-mcp` | 3 | Lightweight MCP server |
 | `mock-llm-d` | 1 | Mock OpenAI-compatible LLM inference service (llm-d-inference-sim) |
 | `prometheus` | 1 | Metrics |
 | `grafana` | 1 | Dashboards |
@@ -82,7 +82,7 @@ The script walks through the following steps interactively:
 ### 1. Scale MCP deployment
 
 ```bash
-kubectl scale -n ai-platform deploy/mcp-server-everything --replicas 3
+kubectl scale -n ai-platform deploy/fast-mcp --replicas 3
 ```
 
 ### 2. Configure the Streamlit UI
@@ -129,7 +129,7 @@ kubectl scale -n ai-platform deploy/mcp-server-everything --replicas 3
 Rollout restart the backend servers:
 
 ```bash
-kubectl rollout restart -n ai-platform deployment mcp-server-everything
+kubectl rollout restart -n ai-platform deployment fast-mcp
 kubectl rollout restart -n ai-platform deployment mock-llm
 ```
 
@@ -249,7 +249,7 @@ kubectl logs -n agentgateway-system deploy/agentgateway-proxy-mcp -f
 kubectl logs -n agentgateway-system deploy/agentgateway-proxy-llm -f
 
 # MCP server logs
-kubectl logs -n ai-platform deploy/mcp-server-everything -f
+kubectl logs -n ai-platform deploy/fast-mcp -f
 
 # Prometheus metrics
 kubectl port-forward -n monitoring svc/prometheus 9090:9090
@@ -283,7 +283,7 @@ scenario-1b/
 ├── cleanup.sh              # Standalone cleanup
 ├── k8s/
 │   ├── agent-deployment.yaml            # Loadgen client (GATEWAY_IP → proxy-mcp)
-│   ├── mcp-everything-deployment.yaml   # MCP everything server + service
+│   ├── fast-mcp-deployment.yaml          # fast-mcp server + service
 │   └── mock-llm-deployment.yaml         # Mock LLM server + service
 ├── installation-steps/
 │   ├── 003-switch-from-1a.md                  # Instructions to convert 1a → 1b
@@ -293,7 +293,7 @@ scenario-1b/
 ├── route/
 │   ├── mock-openai-httproute.yaml       # /mock-openai → agentgateway-proxy-llm
 │   ├── mock-openai-backend.yaml         # mock-llm AgentgatewayBackend
-│   ├── mcp-everything-httproute.yaml    # /mcp → agentgateway-proxy-mcp
-│   └── mcp-everything-backend.yaml      # MCP everything AgentgatewayBackend
+│   ├── fast-mcp-httproute.yaml           # /mcp → agentgateway-proxy-mcp
+│   └── fast-mcp-backend.yaml            # fast-mcp AgentgatewayBackend
 └── images/                                  # Locust & Grafana screenshots
 ```

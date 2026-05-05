@@ -129,6 +129,12 @@ class AgentGatewayUser(HttpUser):
                 self.mcp_session_id = resp.headers.get("mcp-session-id", "")
                 if self.mcp_session_id:
                     resp.success()
+                    self.client.post(
+                        MCP_PATH,
+                        json={"jsonrpc": "2.0", "method": "notifications/initialized"},
+                        headers={**headers, "mcp-session-id": self.mcp_session_id},
+                        name="/mcp notifications/initialized",
+                    )
                 else:
                     resp.failure("No mcp-session-id in initialize response")
             else:

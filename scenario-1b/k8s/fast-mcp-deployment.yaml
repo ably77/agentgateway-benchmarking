@@ -1,0 +1,73 @@
+---
+# fast-mcp Server — lightweight MCP server with echo tool
+# Exposes streamable-HTTP MCP endpoint on port 3000
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fast-mcp
+  namespace: ai-platform
+  labels:
+    app: fast-mcp
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: fast-mcp
+  template:
+    metadata:
+      labels:
+        app: fast-mcp
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3000"
+    spec:
+      nodeSelector:
+        workload: capability
+      tolerations:
+        - key: workload
+          operator: Equal
+          value: capability
+          effect: NoSchedule
+      containers:
+        - name: fast-mcp
+          image: howardjohn/fast-mcp:latest
+          ports:
+            - name: mcp-http
+              containerPort: 3000
+          env:
+            - name: PORT
+              value: "3000"
+          readinessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: "2000m"
+              memory: "1Gi"
+            limits:
+              cpu: "2000m"
+              memory: "1Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fast-mcp
+  namespace: ai-platform
+  labels:
+    app: fast-mcp
+spec:
+  selector:
+    app: fast-mcp
+  ports:
+    - name: mcp-http
+      port: 8080
+      targetPort: 3000
+      appProtocol: kgateway.dev/mcp

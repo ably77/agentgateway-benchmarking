@@ -10,7 +10,7 @@ This cluster setup is shared across the **Baseline**, **Scenario 1a**, **Scenari
 ```
 Node Group 1 (Zone A): ns=agent-1         → Client-1
 Node Group 2 (Zone A): ns=agentgateway-system → Agentgateway (MCP + LLM)
-Node Group 3 (Zone A): ns=capability-1    → MCP Server (mcp-everything) + mock-llm-d
+Node Group 3 (Zone A): ns=capability-1    → MCP Server (fast-mcp) + mock-llm-d
 ```
 
 ---

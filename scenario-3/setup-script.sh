@@ -2,7 +2,7 @@
 # =============================================================================
 # Scenario 3: Cross-Region Service Distribution — External Client via LoadBalancer
 # =============================================================================
-# Hop path: Client → NLB → agw /mcp → mcp-everything sampleLLM → agw /mock-openai → LLM
+# Hop path: Client → NLB → agw /mcp → fast-mcp echo → agw /mock-openai → LLM
 #
 # Difference from 1a: client connects via the LoadBalancer external IP so the
 # NLB hop is included in all latency measurements.
@@ -12,7 +12,7 @@
 #   2) k8s    — single client deployed to a separate cluster (NLB hop, no internet variance)
 #
 # Steps
-#   1. Deploy mcp-server-everything + mock-llm to ai-platform namespace
+#   1. Deploy fast-mcp + mock-llm to ai-platform namespace
 #   2. Apply AgentGateway HTTPRoutes and backends (unchanged from 1a)
 #   3. Wait for LoadBalancer external IP
 #   4. Deploy client (local or separate k8s cluster)
@@ -91,23 +91,23 @@ kubectl --context "${GATEWAY_CONTEXT}" patch enterpriseagentgatewayparameters ag
 echo
 
 # =============================================================================
-# STEP 1 — Deploy mcp-server-everything + mock-llm
+# STEP 1 — Deploy fast-mcp + mock-llm
 # =============================================================================
 echo "─────────────────────────────────────────────────────"
-info "Step 1: Deploy mcp-server-everything + mock-llm"
+info "Step 1: Deploy fast-mcp + mock-llm"
 echo "─────────────────────────────────────────────────────"
 
 kubectl --context "${GATEWAY_CONTEXT}" get namespace "${NAMESPACE}" &>/dev/null \
     || kubectl --context "${GATEWAY_CONTEXT}" create namespace "${NAMESPACE}"
 info "Namespace '${NAMESPACE}' ready."
 
-kubectl --context "${GATEWAY_CONTEXT}" apply -f "${SCRIPT_DIR}/k8s/mcp-everything-deployment.yaml"
+kubectl --context "${GATEWAY_CONTEXT}" apply -f "${SCRIPT_DIR}/k8s/fast-mcp-deployment.yaml"
 kubectl --context "${GATEWAY_CONTEXT}" apply -f "${SCRIPT_DIR}/k8s/mock-llm-deployment.yaml"
 info "Workloads applied. Waiting for rollouts …"
 
-kubectl --context "${GATEWAY_CONTEXT}" rollout status deployment/mcp-server-everything -n "${NAMESPACE}" --timeout=120s
-kubectl --context "${GATEWAY_CONTEXT}" rollout status deployment/mock-llm              -n "${NAMESPACE}" --timeout=120s
-info "mcp-server-everything and mock-llm are ready."
+kubectl --context "${GATEWAY_CONTEXT}" rollout status deployment/fast-mcp -n "${NAMESPACE}" --timeout=120s
+kubectl --context "${GATEWAY_CONTEXT}" rollout status deployment/mock-llm  -n "${NAMESPACE}" --timeout=120s
+info "fast-mcp and mock-llm are ready."
 echo
 
 # =============================================================================
@@ -119,8 +119,8 @@ echo "────────────────────────�
 
 kubectl --context "${GATEWAY_CONTEXT}" apply -f "${SCRIPT_DIR}/route/mock-openai-backend.yaml"
 kubectl --context "${GATEWAY_CONTEXT}" apply -f "${SCRIPT_DIR}/route/mock-openai-httproute.yaml"
-kubectl --context "${GATEWAY_CONTEXT}" apply -f "${SCRIPT_DIR}/route/mcp-everything-backend.yaml"
-kubectl --context "${GATEWAY_CONTEXT}" apply -f "${SCRIPT_DIR}/route/mcp-everything-httproute.yaml"
+kubectl --context "${GATEWAY_CONTEXT}" apply -f "${SCRIPT_DIR}/route/fast-mcp-backend.yaml"
+kubectl --context "${GATEWAY_CONTEXT}" apply -f "${SCRIPT_DIR}/route/fast-mcp-httproute.yaml"
 
 info "Routes applied:"
 kubectl --context "${GATEWAY_CONTEXT}" get httproutes -n "${AGW_NAMESPACE}"
@@ -321,7 +321,7 @@ echo "  # AgentGateway request logs"
 echo "  kubectl --context ${GATEWAY_CONTEXT} logs -n ${AGW_NAMESPACE} deploy/agentgateway-proxy -f"
 echo
 echo "  # MCP server logs"
-echo "  kubectl --context ${GATEWAY_CONTEXT} logs -n ${NAMESPACE} deploy/mcp-server-everything -f"
+echo "  kubectl --context ${GATEWAY_CONTEXT} logs -n ${NAMESPACE} deploy/fast-mcp -f"
 echo
 echo "  # Prometheus port-forward"
 echo "  kubectl --context ${GATEWAY_CONTEXT} port-forward -n monitoring svc/grafana-prometheus-kube-pr-prometheus 9090:9090"
@@ -342,7 +342,7 @@ echo
 read -r -p "Run cleanup? (removes routes and workloads) [y/N]: " DO_CLEANUP
 if [[ "${DO_CLEANUP,,}" == "y" ]]; then
     kubectl --context "${GATEWAY_CONTEXT}" delete -f "${SCRIPT_DIR}/route/" --ignore-not-found
-    kubectl --context "${GATEWAY_CONTEXT}" delete -f "${SCRIPT_DIR}/k8s/mcp-everything-deployment.yaml" --ignore-not-found
+    kubectl --context "${GATEWAY_CONTEXT}" delete -f "${SCRIPT_DIR}/k8s/fast-mcp-deployment.yaml" --ignore-not-found
     kubectl --context "${GATEWAY_CONTEXT}" delete -f "${SCRIPT_DIR}/k8s/mock-llm-deployment.yaml" --ignore-not-found
 
     if [[ "${CLIENT_MODE}" == "k8s" ]] && [ -n "${CLIENT_CONTEXT}" ]; then

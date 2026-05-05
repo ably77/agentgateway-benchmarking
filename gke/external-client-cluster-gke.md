@@ -12,7 +12,7 @@ Node Group 1 (Zone A): agent-external-client  → Client-1 (ns=agent-1)
 
 [Cluster 1 — remote (ly-gke-benchmark-main)]
 Node Group 2 (Zone A): agentgateway-main  → Agentgateway (MCP + LLM)
-Node Group 3 (Zone A): capability-main    → MCP Server (mcp-everything) + mock-llm-d
+Node Group 3 (Zone A): capability-main    → MCP Server (fast-mcp) + mock-llm-d
 ```
 
 ---

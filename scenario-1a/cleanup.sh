@@ -20,7 +20,7 @@ info "Removing loadgen client …"
 kubectl delete -f "${SCRIPT_DIR}/k8s/agent-deployment.yaml" --ignore-not-found
 
 info "Removing workloads …"
-kubectl delete -f "${SCRIPT_DIR}/k8s/mcp-everything-deployment.yaml" --ignore-not-found
+kubectl delete -f "${SCRIPT_DIR}/k8s/fast-mcp-deployment.yaml" --ignore-not-found
 kubectl delete -f "${SCRIPT_DIR}/k8s/mock-llm-deployment.yaml" --ignore-not-found
 
 info "Deleting namespaces …"

@@ -2,10 +2,10 @@
 # =============================================================================
 # Scenario 0: Baseline — Direct Backend, No Proxy
 # =============================================================================
-# Hop path: Client → mcp-everything (direct)   Client → mock-llm (direct)
+# Hop path: Client → fast-mcp (direct)   Client → mock-llm (direct)
 #
 # Steps
-#   1. Deploy mcp-server-everything + mock-llm to ai-platform namespace
+#   1. Deploy fast-mcp + mock-llm to ai-platform namespace
 #   2. Deploy in-cluster loadgen client (k8s)
 #   3. Observability hints
 #   4. Cleanup
@@ -39,25 +39,25 @@ echo "======================================================"
 echo
 
 # =============================================================================
-# STEP 1 — Deploy mcp-server-everything + mock-llm
+# STEP 1 — Deploy fast-mcp + mock-llm
 # =============================================================================
 echo "─────────────────────────────────────────────────────"
-info "Step 1: Deploy mcp-server-everything + mock-llm"
+info "Step 1: Deploy fast-mcp + mock-llm"
 echo "─────────────────────────────────────────────────────"
 
 # Create namespace if it doesn't exist
 kubectl get namespace "${NAMESPACE}" &>/dev/null || kubectl create namespace "${NAMESPACE}"
 info "Namespace '${NAMESPACE}' ready."
 
-kubectl apply -f "${SCRIPT_DIR}/k8s/mcp-everything-deployment.yaml"
+kubectl apply -f "${SCRIPT_DIR}/k8s/fast-mcp-deployment.yaml"
 kubectl apply -f "${SCRIPT_DIR}/k8s/mock-llm-deployment.yaml"
 info "Workloads applied. Waiting for rollouts …"
 
-kubectl rollout status deployment/mcp-server-everything -n "${NAMESPACE}" --timeout=120s
+kubectl rollout status deployment/fast-mcp -n "${NAMESPACE}" --timeout=120s
 kubectl rollout status deployment/mock-llm              -n "${NAMESPACE}" --timeout=120s
-info "mcp-server-everything and mock-llm are ready."
+info "fast-mcp and mock-llm are ready."
 
-MCP_PODS=$(kubectl get pods -n "${NAMESPACE}" -l app=mcp-server-everything \
+MCP_PODS=$(kubectl get pods -n "${NAMESPACE}" -l app=fast-mcp \
     -o jsonpath='{.items[*].status.phase}')
 LLM_PODS=$(kubectl get pods -n "${NAMESPACE}" -l app=mock-llm \
     -o jsonpath='{.items[*].status.phase}')
@@ -88,7 +88,7 @@ echo "────────────────────────�
 echo
 
 echo "  # MCP server logs"
-echo "  kubectl logs -n ${NAMESPACE} deploy/mcp-server-everything -f"
+echo "  kubectl logs -n ${NAMESPACE} deploy/fast-mcp -f"
 echo
 echo "  # LLM server logs"
 echo "  kubectl logs -n ${NAMESPACE} deploy/mock-llm -f"
@@ -103,7 +103,7 @@ info "Streamlit UI host configurations (direct backend — no gateway):"
 echo
 echo "  Un-select the Shared Gateway checkbox, then configure:"
 echo
-echo "    MCP:  host=mcp-server-everything.${NAMESPACE}.svc.cluster.local  port=8080  MCP path=/mcp"
+echo "    MCP:  host=fast-mcp.${NAMESPACE}.svc.cluster.local  port=8080  MCP path=/mcp"
 echo "    LLM:  host=mock-llm.${NAMESPACE}.svc.cluster.local               port=8080  LLM path=(leave blank)"
 echo
 echo "  Delta between this baseline and scenario-1a (via agentgateway) = pure agentgateway overhead."
@@ -121,7 +121,7 @@ echo
 
 read -r -p "Run cleanup? (removes workloads and client) [y/N]: " DO_CLEANUP
 if [[ "${DO_CLEANUP,,}" == "y" ]]; then
-    kubectl delete -f "${SCRIPT_DIR}/k8s/mcp-everything-deployment.yaml" --ignore-not-found
+    kubectl delete -f "${SCRIPT_DIR}/k8s/fast-mcp-deployment.yaml" --ignore-not-found
     kubectl delete -f "${SCRIPT_DIR}/k8s/mock-llm-deployment.yaml" --ignore-not-found
     kubectl delete -f "${SCRIPT_DIR}/k8s/agent-deployment.yaml" --ignore-not-found
     info "Workloads and client removed."

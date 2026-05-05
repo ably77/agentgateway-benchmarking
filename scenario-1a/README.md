@@ -26,7 +26,7 @@
 |-----------|----------|-------|
 | `agent` | 1 | Locust load test client |
 | `agentgateway` | 2 | Handles both `/mcp` and `/mock-openai` routes |
-| `mcp-server-everything` | 3 | Reference MCP server |
+| `fast-mcp` | 3 | Lightweight echo MCP server |
 | `mock-llm-d` | 1 | Mock OpenAI-compatible LLM inference service (llm-d-inference-sim) |
 | `prometheus` | 1 | Metrics |
 | `grafana` | 1 | Dashboards |
@@ -55,7 +55,7 @@ chmod +x setup-script.sh
 ```
 
 The script walks through the following steps interactively:
-1. Deploy MCP everything server to `ai-platform` namespace
+1. Deploy fast-mcp server to `ai-platform` namespace
 2. Apply AgentGateway HTTPRoutes and backends
 3. Deploy mock-llm (llm-d-inference-sim)
 4. Set up Python virtual environment
@@ -68,7 +68,7 @@ The script walks through the following steps interactively:
 1. Scale the MCP deployment to 3 replicas:
 
    ```bash
-   kubectl scale -n ai-platform deploy/mcp-server-everything --replicas 3
+   kubectl scale -n ai-platform deploy/fast-mcp --replicas 3
    ```
 
 2. Configure the following in the Streamlit UI:
@@ -92,7 +92,7 @@ The script walks through the following steps interactively:
 5. After each test, rollout restart the backend servers:
 
    ```bash
-   kubectl rollout restart -n ai-platform deployment mcp-server-everything
+   kubectl rollout restart -n ai-platform deployment fast-mcp
    kubectl rollout restart -n ai-platform deployment mock-llm
    ```
 
@@ -307,7 +307,7 @@ Value Add From Baseline:
 kubectl logs -n agentgateway-system deploy/agentgateway -f
 
 # MCP server logs
-kubectl logs -n ai-platform deploy/mcp-server-everything -f
+kubectl logs -n ai-platform deploy/fast-mcp -f
 
 # Prometheus metrics
 kubectl port-forward -n monitoring svc/prometheus 9090:9090
@@ -343,12 +343,12 @@ scenario-1a/
 │   ├── loadtest.py         # Locust load test definition
 │   └── requirements.txt    # Python dependencies
 ├── k8s/
-│   └── mcp-everything-deployment.yaml  # MCP everything server + service
+│   └── fast-mcp-deployment.yaml        # fast-mcp server + service
 ├── route/
 │   ├── mock-openai-httproute.yaml       # /mock-openai route (mock LLM proxy)
 │   ├── mock-openai-backend.yaml        # mock-llm AgentgatewayBackend
-│   ├── mcp-everything-httproute.yaml   # /mcp route (MCP proxy)
-│   └── mcp-everything-backend.yaml     # MCP everything AgentgatewayBackend
+│   ├── fast-mcp-httproute.yaml         # /mcp route (MCP proxy)
+│   └── fast-mcp-backend.yaml           # fast-mcp AgentgatewayBackend
 └── images/                             # Locust & Grafana screenshots for test results
     ├── 50vu/
     └── 100vu/
@@ -459,7 +459,7 @@ scenario-1a/
 kubectl logs -n agentgateway-system deploy/agentgateway -f
 
 # MCP server logs
-kubectl logs -n ai-platform deploy/mcp-server-everything -f
+kubectl logs -n ai-platform deploy/fast-mcp -f
 
 # Prometheus metrics
 kubectl port-forward -n monitoring svc/prometheus 9090:9090
@@ -495,12 +495,12 @@ scenario-1a/
 │   ├── loadtest.py         # Locust load test definition
 │   └── requirements.txt    # Python dependencies
 ├── k8s/
-│   └── mcp-everything-deployment.yaml  # MCP everything server + service
+│   └── fast-mcp-deployment.yaml        # fast-mcp server + service
 ├── route/
 │   ├── mock-openai-httproute.yaml       # /mock-openai route (mock LLM proxy)
 │   ├── mock-openai-backend.yaml        # mock-llm AgentgatewayBackend
-│   ├── mcp-everything-httproute.yaml   # /mcp route (MCP proxy)
-│   └── mcp-everything-backend.yaml     # MCP everything AgentgatewayBackend
+│   ├── fast-mcp-httproute.yaml         # /mcp route (MCP proxy)
+│   └── fast-mcp-backend.yaml           # fast-mcp AgentgatewayBackend
 └── images/                             # Locust & Grafana screenshots for test results
     ├── 50vu/
     └── 250vu/

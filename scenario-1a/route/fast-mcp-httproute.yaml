@@ -4,7 +4,7 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: mcp-everything
+  name: fast-mcp
   namespace: agentgateway-system
 spec:
   parentRefs:
@@ -16,7 +16,7 @@ spec:
             type: PathPrefix
             value: /mcp
       backendRefs:
-        - name: mcp-everything-backend
+        - name: fast-mcp-backend
           group: agentgateway.dev
           kind: AgentgatewayBackend
       timeouts:

@@ -2,14 +2,14 @@
 # =============================================================================
 # Scenario 1b: Colocated Microgateway — Dedicated Proxies
 # =============================================================================
-# Hop path: Client → Agent → agw-mcp /mcp → mcp-everything sampleLLM → agw-llm /mock-openai → LLM
+# Hop path: Client → Agent → agw-mcp /mcp → fast-mcp echo → agw-llm /mock-openai → LLM
 #
 # Difference from 1a: two dedicated Gateway proxies instead of one shared gateway
 #   agentgateway-proxy-mcp  — handles /mcp routes
 #   agentgateway-proxy-llm  — handles /mock-openai routes
 #
 # Steps
-#   1. Deploy mcp-server-everything + mock-llm to ai-platform namespace
+#   1. Deploy fast-mcp + mock-llm to ai-platform namespace
 #   2. Apply AgentGateway HTTPRoutes and backends
 #   3. Get Gateway IPs
 #   4. Set up Python virtual environment
@@ -77,25 +77,25 @@ kubectl patch enterpriseagentgatewayparameters agentgateway-config -n "${AGW_NAM
 echo
 
 # =============================================================================
-# STEP 1 — Deploy mcp-server-everything + mock-llm
+# STEP 1 — Deploy fast-mcp + mock-llm
 # =============================================================================
 echo "─────────────────────────────────────────────────────"
-info "Step 1: Deploy mcp-server-everything + mock-llm"
+info "Step 1: Deploy fast-mcp + mock-llm"
 echo "─────────────────────────────────────────────────────"
 
 # Create namespace if it doesn't exist
 kubectl get namespace "${NAMESPACE}" &>/dev/null || kubectl create namespace "${NAMESPACE}"
 info "Namespace '${NAMESPACE}' ready."
 
-kubectl apply -f "${SCRIPT_DIR}/k8s/mcp-everything-deployment.yaml"
+kubectl apply -f "${SCRIPT_DIR}/k8s/fast-mcp-deployment.yaml"
 kubectl apply -f "${SCRIPT_DIR}/k8s/mock-llm-deployment.yaml"
 info "Workloads applied. Waiting for rollouts …"
 
-kubectl rollout status deployment/mcp-server-everything -n "${NAMESPACE}" --timeout=120s
-kubectl rollout status deployment/mock-llm              -n "${NAMESPACE}" --timeout=120s
-info "mcp-server-everything and mock-llm are ready."
+kubectl rollout status deployment/fast-mcp -n "${NAMESPACE}" --timeout=120s
+kubectl rollout status deployment/mock-llm -n "${NAMESPACE}" --timeout=120s
+info "fast-mcp and mock-llm are ready."
 
-MCP_PODS=$(kubectl get pods -n "${NAMESPACE}" -l app=mcp-server-everything \
+MCP_PODS=$(kubectl get pods -n "${NAMESPACE}" -l app=fast-mcp \
     -o jsonpath='{.items[*].status.phase}')
 LLM_PODS=$(kubectl get pods -n "${NAMESPACE}" -l app=mock-llm \
     -o jsonpath='{.items[*].status.phase}')
@@ -112,8 +112,8 @@ echo "────────────────────────�
 
 kubectl apply -f "${SCRIPT_DIR}/route/mock-openai-backend.yaml"
 kubectl apply -f "${SCRIPT_DIR}/route/mock-openai-httproute.yaml"
-kubectl apply -f "${SCRIPT_DIR}/route/mcp-everything-backend.yaml"
-kubectl apply -f "${SCRIPT_DIR}/route/mcp-everything-httproute.yaml"
+kubectl apply -f "${SCRIPT_DIR}/route/fast-mcp-backend.yaml"
+kubectl apply -f "${SCRIPT_DIR}/route/fast-mcp-httproute.yaml"
 
 info "Routes applied:"
 kubectl get httproutes -n "${AGW_NAMESPACE}"
@@ -309,7 +309,7 @@ echo "  # AgentGateway LLM proxy request logs"
 echo "  kubectl logs -n ${AGW_NAMESPACE} deploy/${LLM_GW_SVC} -f"
 echo
 echo "  # MCP server logs"
-echo "  kubectl logs -n ${NAMESPACE} deploy/mcp-server-everything -f"
+echo "  kubectl logs -n ${NAMESPACE} deploy/fast-mcp -f"
 echo
 echo "  # Prometheus port-forward"
 echo "  kubectl port-forward -n monitoring svc/grafana-prometheus-kube-pr-prometheus 9090:9090"
@@ -341,7 +341,7 @@ if [[ "${CLIENT_MODE}" == "k8s" ]]; then
     echo "    host=${LLM_GW_SVC}.${AGW_NAMESPACE}.svc.cluster.local  port=8080  LLM path=/mock-openai"
     echo
     echo "  Direct backend (bypass agentgateway — zero-gateway baseline):"
-    echo "    MCP:  host=mcp-server-everything.${NAMESPACE}.svc.cluster.local  port=8080  MCP path=/mcp"
+    echo "    MCP:  host=fast-mcp.${NAMESPACE}.svc.cluster.local  port=8080  MCP path=/mcp"
     echo "    LLM:  host=mock-llm.${NAMESPACE}.svc.cluster.local               port=8080  LLM path=(leave blank)"
     echo
     echo "  Delta between in-cluster gateway and direct runs = pure agentgateway overhead."
@@ -361,7 +361,7 @@ echo
 read -r -p "Run cleanup? (removes routes and workloads) [y/N]: " DO_CLEANUP
 if [[ "${DO_CLEANUP,,}" == "y" ]]; then
     kubectl delete -f "${SCRIPT_DIR}/route/" --ignore-not-found
-    kubectl delete -f "${SCRIPT_DIR}/k8s/mcp-everything-deployment.yaml" --ignore-not-found
+    kubectl delete -f "${SCRIPT_DIR}/k8s/fast-mcp-deployment.yaml" --ignore-not-found
     kubectl delete -f "${SCRIPT_DIR}/k8s/mock-llm-deployment.yaml" --ignore-not-found
 
     if [[ "${CLIENT_MODE}" == "k8s" ]]; then
