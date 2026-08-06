@@ -104,14 +104,6 @@ tolerations:
     operator: Equal
     value: agentgateway
     effect: NoSchedule
-# --- Override the default Agentgateway parameters used by this GatewayClass
-# If the referenced parameters are not found, the controller will use the defaults
-gatewayClassParametersRefs:
-  enterprise-agentgateway:
-    group: enterpriseagentgateway.solo.io
-    kind: EnterpriseAgentgatewayParameters
-    name: agentgateway-config
-    namespace: agentgateway-system
 EOF
 ```
 
